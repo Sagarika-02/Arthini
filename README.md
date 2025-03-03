@@ -1,9 +1,10 @@
 # Arthini
 
-![iAccelerate Women's Hackathon](static/Assets/Hero.png)
-![iAccelerate Women's Hackathon](static/Assets/Sh2.png)
-![iAccelerate Women's Hackathon](static/Assets/Sh5.png)
-![iAccelerate Women's Hackathon](static/Assets/Sh3.png)
+<img src="static/Assets/Hero.png" alt="iAccelerate Women's Hackathon" width="500">
+<img src="static/Assets/Sh2.png" alt="iAccelerate Women's Hackathon" width="500">
+<img src="static/Assets/Sh5.png" alt="iAccelerate Women's Hackathon" width="500">
+<img src="static/Assets/Sh3.png" alt="iAccelerate Women's Hackathon" width="500">
+
 **Arthini** is a web application designed to help users manage their finances effectively. It features an interactive dashboard for financial tracking and an AI-powered assistant for financial guidance.
 
 🚀 **Built for iAccelerate Women's Hackathon by Infosys Springboard**.
