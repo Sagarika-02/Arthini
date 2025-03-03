@@ -20,7 +20,7 @@
 <template x-for="(slide, index) in slides" :key="index">
 <div class="absolute inset-0 transition-all duration-1000 ease-in-out"
     :class="{ 'opacity-100 scale-100': activeSlide === index, 'opacity-0 scale-95': activeSlide !== index }">
-    <img :src="slide.image" class="w-full h-full bg-pink-500 object-fit">
+    <img :src="slide.image" class="w-full h-full bg-pink-500 object-contain">
     <div class="absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-white text-center px-6">
         <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold drop-shadow-2xl max-w-4xl leading-snug" x-text="slide.title"></h1>
         <p class="text-xl sm:text-2xl mt-4 drop-shadow-md max-w-3xl text-gray-300" x-text="slide.description"></p>
