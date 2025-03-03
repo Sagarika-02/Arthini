@@ -1,0 +1,49 @@
+# Ignore Python bytecode files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Ignore environment files
+.env
+*.env
+.vscode/
+.idea/
+*.sqlite3
+db.sqlite3
+
+# Ignore Django secret keys & sensitive data
+config/settings.py
+secrets.json
+
+# Ignore log and cache files
+*.log
+*.pot
+*.pyc
+*.pyo
+*.swp
+*.swo
+*.swn
+*.bak
+logs/
+cache/
+
+# Ignore virtual environments
+venv/
+.env/
+env/
+virtualenv/
+
+# Ignore compiled and dependency files
+*.egg-info/
+*.egg
+Pipfile.lock
+poetry.lock
+node_modules/
+yarn.lock
+
+# Ignore database migrations (optional, but useful)
+migrations/
+**/migrations/*.py
+**/migrations/*.pyc
+
+
