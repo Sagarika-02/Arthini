@@ -1,6 +1,6 @@
 # Arthini
 
-![iAccelerate Women's Hackathon](assets/banner.png)
+![iAccelerate Women's Hackathon](static/Assets/Hero.png)
 
 **Arthini** is a web application designed to help users manage their finances effectively. It features an interactive dashboard for financial tracking and an AI-powered assistant for financial guidance.
 
