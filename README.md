@@ -1,6 +1,24 @@
 # Arthini
 
 ![iAccelerate Women's Hackathon](static/Assets/Hero.png)
+<div style="width: 100%; overflow: hidden;">
+  <div style="display: flex; width: 300%; animation: scroll 10s infinite linear;">
+    <img src="static/Assets/Hero.png" width="500" style="margin-right: 10px;">
+    <img src="static/Assets/Sh2.png" width="500" style="margin-right: 10px;">
+    <img src="static/Assets/Sh5.png" width="500" style="margin-right: 10px;">
+    <img src="static/Assets/Sh3.png" width="500">
+  </div>
+</div>
+
+<style>
+@keyframes scroll {
+  0% { transform: translateX(0%); }
+  33% { transform: translateX(-33%); }
+  66% { transform: translateX(-66%); }
+  100% { transform: translateX(0%); }
+}
+</style>
+
 
 **Arthini** is a web application designed to help users manage their finances effectively. It features an interactive dashboard for financial tracking and an AI-powered assistant for financial guidance.
 
