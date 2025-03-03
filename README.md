@@ -1,9 +1,15 @@
 # Arthini
+<table>
+  <tr>
+    <td><img src="static/Assets/Hero.png" alt="Hero" width="300"></td>
+    <td><img src="static/Assets/Sh2.png" alt="Sh2" width="300"></td>
+  </tr>
+  <tr>
+    <td><img src="static/Assets/Sh5.png" alt="Sh5" width="300"></td>
+    <td><img src="static/Assets/Sh3.png" alt="Sh3" width="300"></td>
+  </tr>
+</table>
 
-<img src="static/Assets/Hero.png" alt="iAccelerate Women's Hackathon" width="500">
-<img src="static/Assets/Sh2.png" alt="iAccelerate Women's Hackathon" width="500">
-<img src="static/Assets/Sh5.png" alt="iAccelerate Women's Hackathon" width="500">
-<img src="static/Assets/Sh3.png" alt="iAccelerate Women's Hackathon" width="500">
 
 **Arthini** is a web application designed to help users manage their finances effectively. It features an interactive dashboard for financial tracking and an AI-powered assistant for financial guidance.
 
