@@ -1,0 +1,36 @@
+
+{% load static %}
+<!--About -->
+<section class="bg-white py-14 px-4 md:px-10 lg:px-18">
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center">
+        <div class="md:w-2/5">
+            <img src="{% static 'Assets/Magenta Beauty & Fashion Free Logo.png' %}" 
+                alt="Empowered Woman Managing Finances" 
+                class="w-[42vh] rounded-lg shadow-lg">
+        </div>
+        <div class="md:w-3/5 mt-8 md:mt-0 md:pl-10 text-center md:text-left">
+            <h2 class="text-3xl font-bold text-gray-900">About  <strong class="text-pink-500">Arthini</strong></h2>
+            <p class="mt-4 text-base text-gray-700 leading-relaxed">
+                Arthini is a comprehensive financial platform designed to help women manage their finances efficiently. From budgeting and investment insights to financial planning tools, Arthini provides user-friendly solutions tailored to diverse financial goals.
+            </p>
+            <p class="mt-4 text-base text-gray-700 leading-relaxed">
+                Whether you're looking to optimise savings, explore investment opportunities, or enhance financial literacy, Arthini offers expert-driven resources and AI-powered analytics to support informed decision-making.
+            </p>
+            {% if user.is_authenticated %}
+            <div class="mt-6">
+                <a href="{% url 'dashboard' %}" 
+                    class="bg-pink-500 text-white px-6 py-3 rounded-lg text-base font-semibold hover:bg-pink-600 transition shadow-md">
+                    Get Started
+                </a>
+            </div>
+            {% else %}
+            <div class="mt-6">
+                <a href="{% url 'signup' %}" 
+                    class="bg-pink-500 text-white px-6 py-3 rounded-lg text-base font-semibold hover:bg-pink-600 transition shadow-md">
+                    Get Started
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>

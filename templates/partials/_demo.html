@@ -1,0 +1,48 @@
+{% load static %}
+<!-- Demo Section -->
+<section class="bg-gray-100 py-16">
+    <div class="max-w-6xl mx-auto px-6 text-center">
+        <h2 class="text-3xl font-bold text-gray-800">Explore Our<strong class="bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent">
+            Finance Tracker
+        </strong>
+        Features</h2>
+        <p class="text-gray-600 mt-2">Get a glimpse of what you can do with our intuitive dashboard.</p>
+
+        <!-- Carousel Wrapper -->
+        <div class="relative mt-10 overflow-hidden">
+            <div id="carousel" class="flex w-max overflow-hidden">
+                <!-- Images (Replace with your images) -->
+                <img src="{% static 'Assets/Sh1.png' %}" class="w-[650px] h-[320px] object-fit">
+                <img src="{% static 'Assets/Sh2.png' %}" class="w-[650px] h-[320px] object-fit">
+                <img src="{% static 'Assets/Sh3.png' %}" class="w-[650px] h-[320px] object-fit">
+                <img src="{% static 'Assets/Sh4.png' %}" class="w-[650px] h-[320px] object-fit">
+                <img src="{% static 'Assets/Sh5.png' %}" class="w-[650px] h-[320px] object-fit">
+                <img src="{% static 'Assets/Sh1.png' %}" class="w-[650px] h-[320px] object-fit">
+            </div>
+        </div>
+
+        <!-- Try It Now Button -->
+        {% if user.is_authenticated %}
+        <!-- Try It Now Button -->
+        <div class="mt-10 flex justify-center">
+            <a href="{% url 'dashboard' %}" 
+            class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-8 py-3 
+                    rounded-full font-semibold text-lg shadow-lg transition duration-300 
+                    transform hover:scale-105 hover:shadow-2xl">
+                 Try It Now
+            </a>
+        </div>
+        {% else %}
+       <!-- Try It Now Button -->
+        <div class="mt-10 flex justify-center">
+            <a href="{% url 'signup' %}" 
+            class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-8 py-3 
+                    rounded-full font-semibold text-lg shadow-lg transition duration-300 
+                    transform hover:scale-105 hover:shadow-2xl">
+                 Try It Now
+            </a>
+        </div>
+        {% endif %}
+
+    </div>
+</section>

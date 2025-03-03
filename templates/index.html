@@ -1,0 +1,221 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<body class="bg-gray-100 text-gray-900">
+    <!-- Navbar -->
+    <nav class=" bg-gray-800  shadow-md fixed w-full z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    <img src="{% static 'Assets/Magenta Beauty & Fashion Free Logo.png' %}" alt="Arthini Logo" class="h-10">
+                    <h1 class="text-pink-500 font-bold text-2xl">Arthini</h1>
+                </div>
+                
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex md:items-center md:space-x-6">
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'home' %}" class="text-white text-lg hover:text-pink-500">Home</a>
+                    <a href="{% url 'dashboard' %}" class="text-white text-lg hover:text-pink-500">Dashboard</a>
+                    <a href="{% url 'investment' %}" class="text-white text-lg hover:text-pink-500">AI Assistant</a>
+                    <a href="{% url 'learning' %}" class="text-white text-lg hover:text-pink-500">Learning</a>
+                    <a href="{% url 'logoutuser' %}" class="bg-pink-500 text-white px-4 py-2 rounded-lg hover:bg-pink-600 transition"><i class="fas fa-sign-out-alt"></i></i>Log out</a>
+                    {% else %}
+                    <a href="{% url 'loginuser' %}" class="bg-pink-500 text-white px-4 py-2 rounded-lg hover:bg-pink-600 transition"><i class="fas fa-sign-in-alt"></i> Login</a>
+                    <a href="{% url 'signup' %}" class="bg-yellow-300 text-pink-900 px-4 py-2 rounded-lg hover:bg-yellow-400 transition"><i class="fas fa-user-plus"></i> Join</a>
+                    {% endif %}
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden flex items-center">
+                    <button id="menu-toggle" class="inline-flex items-center justify-center p-2 rounded-md text-pink-500 hover:text-pink-600 hover:bg-pink-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-pink-500" aria-expanded="false">
+                        <span class="sr-only">Open menu</span>
+                        <!-- Icon when menu is closed -->
+                        <svg id="menu-icon" class="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                        <!-- Icon when menu is open -->
+                        <svg id="close-icon" class="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="hidden md:hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 bg-white shadow-lg">
+                {% if user.is_authenticated%}
+                <a href="{% url 'home' %}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-pink-500 hover:bg-pink-50">Home</a>
+                <a href="{% url 'dashboard' %}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-pink-500 hover:bg-pink-50">Dashboard</a>
+                <a href="{% url 'investment' %}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-pink-500 hover:bg-pink-50">AI Assistant</a>
+                <a href="{% url 'learning' %}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-pink-500 hover:bg-pink-50">Learning</a>
+                <a href="{% url 'logoutuser' %}" class="block text-center bg-pink-500 text-white px-4 py-2 rounded-lg hover:bg-pink-600 transition"><i class="fas fa-sign-out-alt mr-2"></i>Log Out</a>
+                {% else %}
+                <div class="px-3 py-3 space-y-2">
+                    <a href="{% url 'loginuser' %}" class="block text-center bg-pink-500 text-white px-4 py-2 rounded-lg hover:bg-pink-600 transition"> <i class="fas fa-sign-in-alt"></i> Login</a>
+                    <a href="{% url 'signup' %}" class="block text-center bg-yellow-300 text-pink-900 px-4 py-2 rounded-lg hover:bg-yellow-400 transition"><i class="fas fa-user-plus"></i> Join Arthini</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Content wrapper with padding-top -->
+    <div class="pt-16">
+        
+    {% if user.is_authenticated %}
+
+        <!--Hero Section-->
+        {% include 'partials/_hero.html' %}
+
+        <!--About us section-->
+        {% include 'partials/_about.html' %}
+        
+         <!--Demo section-->
+         {% include 'partials/_demo.html'%}
+
+         <!--Footer-->
+         {% include 'partials/_footer.html'%}
+    {% else %}
+            
+        <!--Hero Section-->
+        {% include 'partials/_hero.html' %}
+
+        <!--About us section-->
+        {% include 'partials/_about.html' %}
+        
+        
+    
+        <!-- Why Choose Arthini Section -->
+        <section class="max-w-5xl mx-auto mt-12 px-6">
+        <h2 class="text-3xl font-semibold text-center mb-8">Why Choose <strong class="text-pink-500">Arthini?</strong> </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+            <div class="p-6 bg-white shadow-lg rounded-lg text-center">
+                <i class="fas fa-brain text-pink-500 text-4xl mb-3"></i>
+                <h3 class="text-xl font-semibold mb-3">AI Financial Coach</h3>
+                <p class="text-gray-600">Get personalized investment insights and smart spending advice.</p>
+            </div>
+            <div class="p-6 bg-white shadow-lg rounded-lg text-center">
+                <i class="fas fa-chart-line text-yellow-400 text-4xl mb-3"></i>
+                <h3 class="text-xl font-semibold mb-3">Budget & Expense Tracking</h3>
+                <p class="text-gray-600">Easily monitor your spending and set savings goals.</p>
+            </div>
+            <div class="p-6 bg-white shadow-lg rounded-lg text-center">
+                <i class="fas fa-gamepad text-blue-500 text-4xl mb-3"></i>
+                <h3 class="text-xl font-semibold mb-3">Gamified Learning <span class="text-pink-500">(Coming Soon)</span></h3>
+                <p class="text-gray-600">Engage in interactive challenges and fun financial education.</p>
+            </div>
+        </div>
+        </section>
+
+         
+
+        <!-- Demo Section -->
+        {% include 'partials/_demo.html'%}
+
+
+
+        <!-- Hide Scrollbar -->
+        <style>
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+        </style>
+
+
+        <!-- Testimonial Section -->
+        <!--<section class="relative bg-gray-200 py-16 text-center">
+        <div class="absolute top-0 left-0 w-full">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+                <path fill="#f3f4f6" fill-opacity="1" d="M0,256L40,229.3C80,203,160,149,240,154.7C320,160,400,224,480,229.3C560,235,640,181,720,165.3C800,149,880,171,960,170.7C1040,171,1120,149,1200,144C1280,139,1360,181,1400,202.7L1440,224V320H0Z"></path>
+            </svg>
+        </div>
+        <div class="relative z-10">
+            <h2 class="text-3xl font-semibold">What Women Say</h2>
+            <p class="italic text-lg mt-4">"Arthini helped me take control of my finances with ease!"</p>
+            <p class="mt-4 font-semibold">- Priya Sharma</p>
+        </div>
+        </section>-->
+        {% include 'partials/_footer.html'%}
+
+        {% endif %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script>
+        const menuToggle = document.getElementById('menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuIcon = document.getElementById('menu-icon');
+        const closeIcon = document.getElementById('close-icon');
+
+        menuToggle.addEventListener('click', () => {
+            const isMenuOpen = mobileMenu.classList.contains('hidden');
+            
+            // Toggle menu visibility with animation
+            if (isMenuOpen) {
+                mobileMenu.classList.remove('hidden');
+                menuIcon.classList.add('hidden');
+                closeIcon.classList.remove('hidden');
+                
+                // Animate menu sliding down
+                mobileMenu.style.maxHeight = '0';
+                mobileMenu.style.transition = 'max-height 0.3s ease-in-out';
+                requestAnimationFrame(() => {
+                    mobileMenu.style.maxHeight = mobileMenu.scrollHeight + 'px';
+                });
+            } else {
+                menuIcon.classList.remove('hidden');
+                closeIcon.classList.add('hidden');
+                
+                // Animate menu sliding up
+                mobileMenu.style.maxHeight = '0';
+                setTimeout(() => {
+                    mobileMenu.classList.add('hidden');
+                }, 300);
+            }
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (event) => {
+            if (!mobileMenu.contains(event.target) && !menuToggle.contains(event.target)) {
+                mobileMenu.classList.add('hidden');
+                menuIcon.classList.remove('hidden');
+                closeIcon.classList.add('hidden');
+            }
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 768) { // md breakpoint
+                mobileMenu.classList.add('hidden');
+                menuIcon.classList.remove('hidden');
+                closeIcon.classList.add('hidden');
+            }
+        });
+
+
+   //Demo section :JavaScript for Auto-Scrolling
+
+    const carousel = document.getElementById("carousel");
+    let scrollAmount = 0;
+
+    function autoScroll() {
+        scrollAmount += 2; // Adjust speed if needed
+        if (scrollAmount >= carousel.scrollWidth / 2) {
+            scrollAmount = 0; // Reset scroll for infinite loop effect
+        }
+        carousel.style.transform = `translateX(-${scrollAmount}px)`;
+        requestAnimationFrame(autoScroll);
+    }
+
+    autoScroll();
+
+    </script>
+</body>
+{% endblock %}

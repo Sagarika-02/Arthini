@@ -1,0 +1,48 @@
+<!-- Hero Section with Full-Width Carousel -->
+ {% load static %}
+<section x-data="{ activeSlide: 0, slides: [
+{ 
+    image: '{% static 'Assets/img1.webp' %}', 
+    title: 'A woman\'s best protection is a little money of her own.– Clare Boothe Luce', 
+    description: 'Take control of your finances, build wealth, and secure your future with smart financial planning.' 
+},
+{ 
+    image:'{% static 'Assets/img2.webp' %}' , 
+    title: 'Don\'t work for money, make money work for you. – Robert Kiyosaki', 
+    description: 'With AI-driven insights, make informed investment decisions and grow your wealth effortlessly.' 
+},
+{ 
+    image:'{% static 'Assets/img3.webp' %}', 
+    title: 'Financial independence gives you the power to live life on your own terms.', 
+    description: 'Track, plan, and invest wisely—because financial freedom is not a dream, it\'s a plan.'
+}
+]}" class="relative w-full h-[590px] overflow-hidden">
+<template x-for="(slide, index) in slides" :key="index">
+<div class="absolute inset-0 transition-all duration-1000 ease-in-out"
+    :class="{ 'opacity-100 scale-100': activeSlide === index, 'opacity-0 scale-95': activeSlide !== index }">
+    <img :src="slide.image" class="w-full h-full bg-pink-500 object-fit">
+    <div class="absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-white text-center px-6">
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold drop-shadow-2xl max-w-4xl leading-snug" x-text="slide.title"></h1>
+        <p class="text-xl sm:text-2xl mt-4 drop-shadow-md max-w-3xl text-gray-300" x-text="slide.description"></p>
+    </div>
+</div>
+</template>
+
+<button @click="activeSlide = (activeSlide > 0 ? activeSlide - 1 : slides.length - 1)"
+class="absolute left-6 top-1/2 transform -translate-y-1/2 bg-white/30 hover:bg-white/50 text-white p-4 rounded-full shadow-lg transition-all duration-300">
+❮
+</button>
+<button @click="activeSlide = (activeSlide < slides.length - 1 ? activeSlide + 1 : 0)"
+class="absolute right-6 top-1/2 transform -translate-y-1/2 bg-white/30 hover:bg-white/50 text-white p-4 rounded-full shadow-lg transition-all duration-300">
+❯
+</button>
+
+<div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-3">
+<template x-for="(slide, index) in slides" :key="index">
+    <span @click="activeSlide = index"
+        class="h-4 w-4 rounded-full cursor-pointer transition-all duration-300"
+        :class="activeSlide === index ? 'bg-blue-400 scale-125' : 'bg-gray-500'">
+    </span>
+</template>
+</div>
+</section>

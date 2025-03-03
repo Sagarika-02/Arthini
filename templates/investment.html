@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<body class="bg-gray-100 text-gray-900 flex flex-col md:flex-row">
+
+    <!-- Include Sidebar -->
+    {% include 'partials/_sidebar.html' %}
+    <!-- Main Content -->
+    <main class="flex-1 p-6 ml-0 md:ml-64">
+
+
+
+        <!-- AI Financial Assistant -->
+        <section
+            class="bg-gray-900 text-white shadow-xl p-8 rounded-lg h-[95vh] max-w-[1000vh] w-full mx-auto flex flex-col">
+            <h2 class="text-3xl font-semibold mb-6 text-center">
+                <i class="fas fa-comment"></i> AI Financial Assistant
+            </h2>
+
+            <!-- Chatbox -->
+            <div id="chatContainer" class="flex-1 overflow-y-auto border border-gray-700 p-4 rounded-lg bg-gray-800 shadow-inner space-y-4 
+        scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-700">
+            </div>
+
+            <!-- Input and Buttons -->
+            <div class="mt-4 flex items-center gap-3">
+                <input type="text" id="chatInput"
+                    class="flex-1 p-3 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-400 outline-none"
+                    placeholder="Ask a question...">
+
+                <!-- Send Button -->
+                <button id="sendButton"
+                    class="px-5 py-3 rounded-lg bg-yellow-400 text-gray-900 font-semibold hover:bg-yellow-500 transition shadow-md">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+
+                <!-- Clear Chat Button with Trash Icon -->
+                <button id="clearChat"
+                    class="px-6 py-4 rounded-lg bg-red-500 text-white font-semibold hover:bg-red-600 transition shadow-md flex items-center gap-2">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            </div>
+        </section>
+
+
+
+
+
+
+
+        <!-- Investment Growth Chart -->
+        <!-- <section class="mt-6 bg-white shadow-lg p-6 rounded-lg">
+            <h2 class="text-xl font-semibold mb-4">Investment Growth</h2>
+            <canvas id="investmentChart" width="600" height="300"></canvas>
+        </section>-->
+
+
+    </main>
+
+    <!-- Floating AI Chatbot -->
+    <!-- <div id="chatbotContainer" class="fixed bottom-6 right-6 w-80 h-96 bg-white shadow-lg rounded-lg hidden">
+        <div class="bg-pink-500 text-white p-3 flex justify-between items-center rounded-t-lg">
+            <span>Investment AI Advisor</span>
+            <button onclick="toggleChat()" class="text-xl">&times;</button>
+        </div>
+        <div id="chatbotMessages" class="p-3 h-64 overflow-y-auto text-sm">
+            <p class="bg-gray-200 p-2 rounded mb-2">👋 Hi! Need investment advice?</p>
+        </div>
+        <div class="flex p-2">
+            <input id="chatInput" type="text" placeholder="Ask me anything..." class="p-2 border w-full">
+            <button onclick="sendChat()" class="bg-blue-500 text-white px-4">Send</button>
+        </div>
+    </div>-->
+
+    <!-- Floating Chatbot Icon -->
+    <!--<button onclick="toggleChat()" class="fixed bottom-6 right-6 bg-pink-500 text-white p-4 rounded-full shadow-lg text-2xl">
+        💬
+    </button>-->
+
+    <script>
+
+
+
+        /*let investmentChart = new Chart(document.getElementById('investmentChart').getContext('2d'), {
+             type: 'line',
+             data: {
+                 labels: ["1 Year", "2 Years", "3 Years", "4 Years", "5 Years"],
+                 datasets: [{
+                     label: "Investment Growth",
+                     data: [0, 0, 0, 0, 0],
+                     borderColor: "#4F46E5",
+                     backgroundColor: "rgba(79, 70, 229, 0.2)",
+                     borderWidth: 2,
+                     fill: true
+                 }]
+             },
+             options: { responsive: true, scales: { y: { beginAtZero: true } } }
+         });
+ 
+        
+         function toggleChat() {
+             document.getElementById("chatbotContainer").classList.toggle("hidden");
+         }
+ 
+         function sendChat() {
+             let input = document.getElementById("chatInput").value;
+             if (!input.trim()) return;
+             document.getElementById("chatbotMessages").innerHTML += `<p class="bg-blue-100 p-2 rounded mb-2 text-right">${input}</p>`;
+             document.getElementById("chatInput").value = "";
+         }*/
+
+
+        //AI assistan
+        document.addEventListener("DOMContentLoaded", function () {
+            const inputField = document.getElementById("chatInput");
+            const chatContainer = document.getElementById("chatContainer");
+            const sendButton = document.getElementById("sendButton");
+            const clearChatButton = document.getElementById("clearChat");  // New Clear Chat Button
+
+            // Load chat history from sessionStorage
+            function loadChatHistory() {
+                const chatHistory = JSON.parse(sessionStorage.getItem("chatHistory")) || [];
+                chatContainer.innerHTML = chatHistory.join("");  // Restore previous chat messages
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+
+            // Save chat message to sessionStorage
+            function saveChatMessage(messageHTML) {
+                let chatHistory = JSON.parse(sessionStorage.getItem("chatHistory")) || [];
+                chatHistory.push(messageHTML);
+                sessionStorage.setItem("chatHistory", JSON.stringify(chatHistory));
+            }
+
+            async function sendMessage() {
+                const userMessage = inputField.value.trim();
+                if (!userMessage) return;
+
+                // Append user's message and save it
+                const userMessageHTML = `<div class="text-right mb-2"><span class="bg-gray-900 text-white px-4 py-3 rounded-xl shadow-md inline-block">${userMessage}</span></div>`;
+                chatContainer.innerHTML += userMessageHTML;
+                saveChatMessage(userMessageHTML);
+
+                // Show loading indicator
+                const loadingHTML = `<div id="loading" class="text-gray-500 text-sm">Thinking...</div>`;
+                chatContainer.innerHTML += loadingHTML;
+                inputField.value = ""; // Clear input
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+
+                try {
+                    // Send request to AI API
+                    const res = await fetch("/ai-chat/", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRFToken": "{{ csrf_token }}"
+                        },
+                        body: JSON.stringify({ query: userMessage })
+                    });
+
+                    if (!res.ok) throw new Error("Network error");
+
+                    const data = await res.json();
+                    document.getElementById("loading").remove(); // Remove loading indicator
+
+                    // Determine response styling
+                    const aiResponse = data.response.trim() || "Sorry, I could not generate a response.";
+                    const responseClass = aiResponse === "Sorry, I could not generate a response."
+                        ? "bg-gray-600 text-white placeholder-gray-400 shadow-md"
+                        : "bg-gray-600 text-white placeholder-gray-400 shadow-md";
+
+                    // Display AI response and save it
+                    const aiMessageHTML = `<div class="text-left mb-2"><span class="${responseClass} px-4 py-3 rounded-xl inline-block">${aiResponse}</span></div>`;
+                    chatContainer.innerHTML += aiMessageHTML;
+                    saveChatMessage(aiMessageHTML);
+
+                } catch (error) {
+                    console.error("Error:", error);
+                    document.getElementById("loading").remove();
+                    const errorHTML = `<div class="text-left mb-2 bg-yellow-500 text-gray-900 px-4 py-3 rounded-xl shadow-md">Error getting AI response. Try again.</div>`;
+                    chatContainer.innerHTML += errorHTML;
+                    saveChatMessage(errorHTML);
+                }
+
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+
+            // Load previous chat history
+            loadChatHistory();
+
+            // Function to clear chat
+            function clearChat() {
+                sessionStorage.removeItem("chatHistory");  // Clear sessionStorage
+                chatContainer.innerHTML = "";  // Clear UI
+                fetch("/clear-chat/", { method: "POST", headers: { "X-CSRFToken": "{{ csrf_token }}" } });  // Clear session on server
+            }
+
+            // Attach event listener to the send button
+            sendButton.addEventListener("click", sendMessage);
+
+            // Allow Enter key to send message
+            inputField.addEventListener("keypress", function (e) {
+                if (e.key === "Enter") {
+                    sendMessage();
+                }
+            });
+
+            // Attach event listener to the clear chat button
+            clearChatButton.addEventListener("click", clearChat);
+        });
+
+    </script>
+</body>
+{% endblock %}

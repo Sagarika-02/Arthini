@@ -1,0 +1,411 @@
+{% extends 'base.html'%}
+{% load static %}
+
+{% block content %}
+
+<body class="bg-gray-100 text-gray-900 flex flex-col md:flex-row">
+
+    <!-- Include Sidebar -->
+    {% include 'partials/_sidebar.html' %}
+
+    <!-- Main Content -->
+    <main class="flex-1 p-6 ml-0 md:ml-64">
+        <h1 class="text-3xl font-semibold">Finance Tracker</h1>
+
+        <!-- Budget Form -->
+        <section class="mt-6 bg-white shadow-lg p-6 rounded-lg">
+            <h2 class="text-2xl font-semibold mb-4 text-gray-700"><i class="fa-solid fa-file-invoice-dollar"></i>
+                Monthly Budget</h2>
+
+            <form method="POST" class="space-y-4">
+                {% csrf_token %}
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {% for field in budget_form %}
+                    <div>
+                        <label class="block text-gray-600 font-medium mb-1">{{ field.label }}</label>
+                        {{ field }}
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <button type="submit" name="set_budget"
+                    class="mt-3 w-full sm:w-auto bg-blue-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-600 transition">
+                    Set Budget
+                </button>
+            </form>
+
+            <!-- Budget Bar -->
+            <div class="mt-4 bg-gray-200 rounded-full h-6 overflow-hidden">
+                <div id="budgetBar"
+                    class="bg-green-500 h-6 rounded-full text-right pr-2 text-white text-sm leading-6 transition-all duration-500"
+                    data-progress="{{ progress|default:0|floatformat:0 }}">
+                    {{ progress|floatformat:0 }}% Spent
+                </div>
+            </div>
+
+
+
+        </section>
+
+        <!-- Finance Tracker Section -->
+        <section class="mt-6 bg-white shadow-lg p-6 rounded-lg">
+            <h2 class="text-2xl font-semibold mb-4 text-gray-700"><i class="fa-solid fa-credit-card"></i> Finance
+                Tracker</h2>
+
+            <form method="POST" class="space-y-4">
+                {% csrf_token %}
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {% for field in transaction_form %}
+                    <div>
+                        <label class="block text-gray-600 font-medium mb-1">{{ field.label }}</label>
+                        {{ field }}
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <button type="submit" name="add_transaction"
+                    class="mt-3 w-full sm:w-auto bg-purple-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-purple-600 transition">
+                    Add Transaction
+                </button>
+            </form>
+
+            <!-- Transaction History Section -->
+            <section class="mt-6 bg-white shadow-lg p-6 rounded-lg">
+                <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-receipt text-black-500 "></i> Transaction History
+                </h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse border border-gray-200">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="border p-2">Category</th>
+                                <th class="border p-2">Description</th>
+                                <th class="border p-2">Amount</th>
+                                <th class="border p-2">Type</th>
+                                <th class="border p-2">Date</th>
+                                <th class="border p-2">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for transaction in transactions %}
+                            <tr
+                                class="{% if transaction.type == 'expense' %}text-red-500{% else %}text-green-500{% endif %}">
+                                <td class="border p-2">{{ transaction.category }}</td>
+                                <td class="border p-2">{{ transaction.description }}</td>
+                                <td class="border p-2">Rs.{{ transaction.amount }}</td>
+                                <td class="border p-2">{{ transaction.type }}</td>
+                                <td class="border p-2">{{ transaction.date }}</td>
+                                <td class="border p-2">
+                                    <form method="POST" action="{% url 'delete_transaction' transaction.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="text-red-500 hover:text-red-700">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="border p-2 text-center">No transactions yet.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+
+        </section>
+
+
+
+
+        <!-- Expense Breakdown Chart -->
+        <section class="mt-6 bg-white shadow-lg p-6 rounded-xl border border-gray-200">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3 text-gray-800">
+                <i class="fa-solid fa-chart-pie text-blue-500 text-2xl"></i> Monthly Expense Breakdown
+            </h2>
+
+            <div class="flex justify-center">
+                <canvas id="expenseChart" class="w-80 h-80"></canvas>
+            </div>
+
+            <div class="mt-6 p-6 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl shadow-inner">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
+                    <!-- Total Budget -->
+                    <div class="p-4 bg-white rounded-lg shadow-md border border-blue-200 flex flex-col items-center">
+                        <i class="fa-solid fa-wallet text-blue-600 text-3xl mb-2"></i>
+                        <p class="text-gray-600 text-sm uppercase font-medium">Total Budget</p>
+                        <p class="text-2xl font-semibold text-blue-600">Rs.{{ budget_amount }}</p>
+                    </div>
+                    <!-- Remaining Budget -->
+                    <div class="p-4 bg-white rounded-lg shadow-md border border-green-200 flex flex-col items-center">
+                        <i class="fa-solid fa-piggy-bank text-green-600 text-3xl mb-2"></i>
+                        <p class="text-gray-600 text-sm uppercase font-medium">Remaining Budget</p>
+                        <p class="text-2xl font-semibold text-green-600">Rs.{{ remaining_budget }}</p>
+                    </div>
+                    <!-- Total Income -->
+                    <div class="p-4 bg-white rounded-lg shadow-md border border-purple-200 flex flex-col items-center">
+                        <i class="fa-solid fa-coins text-purple-600 text-3xl mb-2"></i>
+                        <p class="text-gray-600 text-sm uppercase font-medium">Total Income</p>
+                        <p class="text-2xl font-semibold text-purple-600">Rs.{{ total_income }}</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+
+        <!-- AI Financial Suggestions -->
+        <section class="mt-6 bg-white shadow-lg p-6 rounded-lg">
+            <h2 class="text-xl font-semibold mb-4">Financial Suggestions</h2>
+            <div id="aiSuggestions" class="p-4 text-gray-700 bg-gray-100 rounded-md border border-gray-300">
+                Your financial insights will appear here.
+            </div>
+        </section>
+
+
+
+
+        <!-- Calculators -->
+        <section class="mt-10 w-full mx-auto p-6 bg-gray-50 rounded-xl shadow-lg">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">Financial Calculators</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- SIP Calculator -->
+                <div class="bg-gray-900 shadow-md p-6 rounded-lg">
+                    <h3 class="text-xl font-semibold text-white mb-4 text-center">SIP Calculator</h3>
+                    <div class="space-y-4">
+                        <input type="number" id="sipAmount"
+                            class="p-3 border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-yellow-400 outline-none"
+                            placeholder="Monthly Investment (₹)">
+                        <input type="number" id="sipRate"
+                            class="p-3 border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-yellow-400 outline-none"
+                            placeholder="Expected Return Rate (%)">
+                        <input type="number" id="sipTime"
+                            class="p-3 border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-yellow-400 outline-none"
+                            placeholder="Investment Duration (years)">
+
+                        <div class="flex justify-center gap-4 mt-4">
+                            <button onclick="calculateSIP()"
+                                class="px-6 py-3 rounded-full bg-yellow-300 text-gray-900 font-semibold text-lg shadow-md hover:bg-yellow-500 hover:shadow-lg transition">
+                                Calculate
+                            </button>
+                            <button onclick="resetSIP()"
+                                class="px-6 py-3 rounded-full bg-pink-500 text-white font-semibold text-lg shadow-md hover:bg-pink-600 hover:shadow-lg transition">
+                                Reset
+                            </button>
+                        </div>
+                    </div>
+                    <p id="sipResult" class="mt-4 text-lg font-semibold text-yellow-400 text-center"></p>
+                </div>
+
+                <!-- EMI Calculator -->
+                <div class="bg-gray-900 shadow-md p-6 rounded-lg">
+                    <h3 class="text-xl font-semibold text-white mb-4 text-center">EMI Calculator</h3>
+                    <div class="space-y-4">
+                        <input type="number" id="loanAmount"
+                            class="p-3 border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-yellow-400 outline-none"
+                            placeholder="Loan Amount (₹)">
+                        <input type="number" id="loanRate"
+                            class="p-3 border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-yellow-400 outline-none"
+                            placeholder="Annual Interest Rate (%)">
+                        <input type="number" id="loanTerm"
+                            class="p-3 border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-yellow-400 outline-none"
+                            placeholder="Loan Term (years)">
+
+                        <div class="flex justify-center gap-4 mt-4">
+                            <button onclick="calculateEMI()"
+                                class="px-6 py-3 rounded-full bg-yellow-300 text-gray-900 font-semibold text-lg shadow-md hover:bg-yellow-500 hover:shadow-lg transition">
+                                Calculate
+                            </button>
+                            <button onclick="resetEMI()"
+                                class="px-6 py-3 rounded-full bg-pink-500 text-white font-semibold text-lg shadow-md hover:bg-pink-600 hover:shadow-lg transition">
+                                Reset
+                            </button>
+                        </div>
+                    </div>
+                    <p id="emiResult" class="mt-4 text-lg font-semibold text-yellow-400 text-center"></p>
+                </div>
+            </div>
+        </section>
+
+
+
+
+
+    </main>
+
+
+
+    <script type="application/json" id="expenseCategories">{{ expense_categories|safe }}</script>
+    <script type="application/json" id="expenseAmounts">{{ expense_amounts|safe }}</script>
+
+    <script>
+
+
+        //budget bar
+
+        document.addEventListener("DOMContentLoaded", function () {
+            let budgetBar = document.getElementById("budgetBar");
+            let progress = parseFloat(budgetBar.getAttribute("data-progress")) || 0;
+
+            // Cap progress at 100% to avoid overflow
+            if (progress > 100) progress = 100;
+
+            // Set progress bar width
+            budgetBar.style.width = progress + "%";
+
+            // Change color if overspent
+            if (parseFloat(budgetBar.getAttribute("data-progress")) > 100) {
+                budgetBar.style.backgroundColor = "#e63946"; // Red for overspending
+            } else {
+                budgetBar.style.backgroundColor = "#4CAF50"; // Green if within budget
+            }
+
+            // Ensure text visibility inside the bar
+            if (progress < 15) {
+                budgetBar.style.color = "#000"; // Dark text for contrast
+                budgetBar.style.textAlign = "left";
+                budgetBar.style.paddingLeft = "8px";
+            } else {
+                budgetBar.style.color = "#fff"; // White text for better contrast on filled bar
+                budgetBar.style.textAlign = "center";
+            }
+        });
+
+
+        //Chart section
+        document.addEventListener("DOMContentLoaded", function () {
+            const ctx = document.getElementById('expenseChart').getContext('2d');
+
+            // Ensure elements exist before accessing their content
+            const categoriesElement = document.getElementById("expenseCategories");
+            const amountsElement = document.getElementById("expenseAmounts");
+
+            if (categoriesElement && amountsElement) {
+                const expenseCategories = JSON.parse(categoriesElement.textContent || "[]");
+                const expenseAmounts = JSON.parse(amountsElement.textContent || "[]");
+
+                if (expenseCategories.length > 0 && expenseAmounts.length > 0) {
+                    new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: expenseCategories,
+                            datasets: [{
+                                label: 'Expenses',
+                                data: expenseAmounts,
+                                backgroundColor: [
+                                    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'
+                                ],
+                                hoverOffset: 4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false
+                        }
+                    });
+                } else {
+                    console.warn("No expense data available.");
+                }
+            } else {
+                console.error("Expense data elements not found.");
+            }
+        });
+
+
+
+        //The Message section
+        document.addEventListener("DOMContentLoaded", function () {
+            // Fetch financial data from Django context
+            const budgetAmount = "{{ budget_amount }}";
+            const totalIncome = "{{ total_income|default:0 }}";
+            const totalExpenses = "{{ total_expenses }}";
+            const remainingBudget = "{{ remaining_budget|default:0 }}";
+            const expenseCategories = JSON.parse('{{ expense_categories|safe }}');
+            const expenseAmounts = JSON.parse('{{ expense_amounts|safe }}');
+
+            // Identify highest spending category
+            let highestSpendingCategory = "N/A";
+            let highestSpendingAmount = 0;
+
+            expenseCategories.forEach((category, index) => {
+                const amount = expenseAmounts[index];
+                if (amount > highestSpendingAmount) {
+                    highestSpendingCategory = category;
+                    highestSpendingAmount = amount;
+                }
+            });
+
+            // Determine suggestion type
+            let suggestion, bgColor;
+
+            if (remainingBudget > budgetAmount * 0.2) {
+                suggestion = `You're managing your finances well! Consider investing ₹${(totalIncome * 0.1).toFixed(0)} in mutual funds or a savings plan.`;
+                bgColor = "bg-green-100 border-green-500 text-green-700";
+            } else if (remainingBudget > 0) {
+                suggestion = `You're close to your budget limit. Try cutting back on ${highestSpendingCategory} expenses (₹${highestSpendingAmount}) to stay within budget.`;
+                bgColor = "bg-orange-100 border-orange-500 text-orange-700";
+            } else {
+                suggestion = `You've overspent! Most of your expenses are on ${highestSpendingCategory} (₹${highestSpendingAmount}). Consider postponing non-urgent purchases.`;
+                bgColor = "bg-red-100 border-red-500 text-red-700";
+            }
+
+            // Update AI suggestions section
+            const aiSuggestions = document.getElementById("aiSuggestions");
+            aiSuggestions.className = `p-4 rounded-md border ${bgColor}`;
+            aiSuggestions.innerHTML = `
+                <strong><i class="fas fa-lightbulb text-yellow-400"></i>
+ Financial Tip:</strong> ${suggestion}
+            `;
+        });
+
+
+        //SIP AND EMI CALCULATION
+
+        function calculateSIP() {
+            let P = parseFloat(document.getElementById('sipAmount').value);
+            let r = parseFloat(document.getElementById('sipRate').value) / 100 / 12;
+            let n = parseInt(document.getElementById('sipTime').value) * 12;
+            if (isNaN(P) || isNaN(r) || isNaN(n)) return;
+
+            let FV = P * ((Math.pow(1 + r, n) - 1) / r) * (1 + r);
+            document.getElementById('sipResult').textContent = `Estimated Maturity Value: ₹${FV.toFixed(2)}`;
+            investmentChart.data.datasets[0].data = [FV * 0.1, FV * 0.3, FV * 0.5, FV * 0.7, FV];
+            investmentChart.update();
+        }
+
+        function calculateEMI() {
+            let P = parseFloat(document.getElementById('loanAmount').value);
+            let r = parseFloat(document.getElementById('loanRate').value) / 100 / 12;
+            let n = parseInt(document.getElementById('loanTerm').value) * 12;
+            if (isNaN(P) || isNaN(r) || isNaN(n)) return;
+
+            let EMI = (P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+            document.getElementById('emiResult').textContent = `Your EMI: ₹${EMI.toFixed(2)}`;
+        }
+
+        function resetSIP() {
+            document.getElementById("sipAmount").value = "";
+            document.getElementById("sipRate").value = "";
+            document.getElementById("sipTime").value = "";
+            document.getElementById("sipResult").textContent = "";
+        }
+
+        function resetEMI() {
+            document.getElementById("loanAmount").value = "";
+            document.getElementById("loanRate").value = "";
+            document.getElementById("loanTerm").value = "";
+            document.getElementById("emiResult").textContent = "";
+        }
+
+
+    </script>
+
+
+</body>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% load static %}
+<!--bg-gradient-to-b from-pink-500-->
+<aside class="w-full md:w-64 md:fixed bg-gray-900  text-white min-h-screen p-5 shadow-lg transition-transform flex flex-col items-center">
+    
+    <!-- Logo Section -->
+    <div class="w-full flex justify-center mb-4">
+        <img src="{% static 'Assets/Magenta Beauty & Fashion Free Logo.png' %}" alt="Arthini Logo"
+            class="w-28 h-auto max-w-full rounded-lg ">
+    </div>
+    
+    <!-- Brand Name -->
+    <h2 class="text-3xl font-bold mb-6 text-center">Arthini</h2>
+
+    <!-- User Profile Section -->
+    <div class="flex items-center space-x-3 mb-6 p-3 bg-white bg-opacity-20 rounded-lg w-full">
+        <i class="fas fa-user-circle text-4xl"></i>
+        <div>
+            {% if request.user.is_authenticated %}
+                <p class="text-lg font-semibold">{{ request.user.username }}</p>
+                <p class="text-sm text-gray-300">{{ request.user.email }}</p>
+            {% else %}
+                <p class="text-lg font-semibold">Guest</p>
+                <p class="text-sm text-gray-300">Not logged in</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Navigation Menu -->
+    <ul class="space-y-4 w-full">
+        <li>
+            <a href="{% url 'home' %}" class="flex items-center space-x-2 p-3 rounded-lg transition duration-300 
+                {% if request.path == '/' %}bg-white text-pink-500{% else %}hover:bg-white hover:text-pink-500{% endif %}">
+                <i class="fas fa-home"></i> <span>Home</span>
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'dashboard' %}" class="flex items-center space-x-2 p-3 rounded-lg transition duration-300 
+                {% if request.path == '/dashboard/' %}bg-white text-pink-500{% else %}hover:bg-white hover:text-pink-500{% endif %}">
+                <i class="fas fa-wallet"></i> <span>Dashboard</span>
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'investment' %}" class="flex items-center space-x-2 p-3 rounded-lg transition duration-300 
+                {% if request.path == '/investment/' %}bg-white text-pink-500{% else %}hover:bg-white hover:text-pink-500{% endif %}">
+                <i class="fas fa-user-gear"></i> <span>AI Assistant</span>
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'learning' %}" class="flex items-center space-x-2 p-3 rounded-lg transition duration-300 
+                {% if request.path == '/learning/' %}bg-white text-pink-500{% else %}hover:bg-white hover:text-pink-500{% endif %}">
+                <i class="fas fa-book"></i> <span>Learning</span>
+            </a>
+        </li>
+    </ul>
+
+    <!-- Logout Button -->
+    <a href="{% url 'logoutuser' %}" class="mt-6 text-sm font-semibold bg-red-500 text-white py-2 px-4 rounded-lg shadow-md 
+        hover:bg-red-600 transition duration-300 ease-in-out transform hover:scale-105">
+        <i class="fas fa-sign-out-alt"></i> Logout
+    </a>
+
+</aside>
