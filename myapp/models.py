@@ -17,23 +17,15 @@ class Transaction(models.Model):
         ('expense', 'Expense'),
     ]
 
-    CATEGORY_CHOICES = [
-        ('Food', 'Food'),
-        ('Transport', 'Transport'),
-        ('Entertainment', 'Entertainment'),
-        ('Bills', 'Bills'),
-        ('Shopping', 'Shopping'),
-        ('Health', 'Health'),
-        ('Other', 'Other'),
-    ]
+
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     description = models.CharField(max_length=255)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     type = models.CharField(max_length=7, choices=TRANSACTION_TYPES)
-    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default='Other') # Add category field.Need this for chart
-    date = models.DateTimeField(auto_now_add=True)
+    category = models.CharField(max_length=100) # Add category field.Need this for chart
+    date = models.DateField()
 
     def __str__(self):
-        return f"{self.user.username} - {self.description} - {self.amount} - {self.type} - {self.category}"
+        return f"{self.user.username} - {self.description} - {self.amount} - {self.type} - {self.category}-{self.date}"
 

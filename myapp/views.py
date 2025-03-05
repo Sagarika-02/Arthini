@@ -18,6 +18,13 @@ import google.generativeai as genai
 import re
 from django.contrib.sessions.models import Session  
 from django.contrib import messages
+from django.http import FileResponse
+from reportlab.pdfgen import canvas
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter,landscape
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+
+from reportlab.lib.styles import getSampleStyleSheet
 # Create your views here.
 
 def home(request):
@@ -66,6 +73,7 @@ def dashboard(request):
     expense_categories = {}
     for t in transactions:
         if t.type == "expense":
+            category = t.category.strip().lower()  # Normalize category names
             if t.category in expense_categories:
                 expense_categories[t.category] += float(t.amount)
             else:
@@ -87,6 +95,106 @@ def dashboard(request):
         'expense_amounts': json.dumps(amounts),
     })
    
+
+
+
+
+
+# Export transaction logs as PDF
+
+def export_transactions_pdf(request):
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="Transactions.pdf"'
+
+    # Create a landscape-oriented PDF with more width
+    pdf = SimpleDocTemplate(response, pagesize=landscape(letter), rightMargin=30, leftMargin=30, topMargin=30, bottomMargin=30)
+    elements = []
+
+    # Title
+    styles = getSampleStyleSheet()
+    title = Paragraph("<b>Transaction Report</b>", styles['Title'])
+    elements.append(title)
+    elements.append(Spacer(1, 12))  # Space after title
+
+    # Define table headers
+    data = [["Category", "Description", "Amount (Rs.)", "Type", "Date"]]
+
+    # Fetch user transactions
+    transactions = Transaction.objects.filter(user=request.user).order_by('-date')
+
+    # Calculate total income and expense
+    total_income = sum(t.amount for t in transactions if t.type == "income")
+    total_expense = sum(t.amount for t in transactions if t.type == "expense")
+
+    # Add transactions to data
+    for transaction in transactions:
+        data.append([
+            transaction.category,
+            transaction.description,
+            transaction.amount,
+            transaction.type.capitalize(),
+            transaction.date.strftime('%#d %B %Y')  # Date format: "3 March 2025"
+        ])
+
+    # Add total income & expense row
+    data.append(["", "", "", "Total Income:", f"Rs. {total_income}"])
+    data.append(["", "", "", "Total Expense:", f"Rs. {total_expense}"])
+
+    # Create table
+    table = Table(data, colWidths=[120, 220, 100, 100, 120])  # Set column width for better spacing
+
+    # Add style to table
+    style = TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.gray),  # Header background
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),  # White header text
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),  # Align all text center
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),  # Bold headers
+        ('FONTSIZE', (0, 0), (-1, -1), 12),  # Bigger font size
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),  # Padding for headers
+        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),  # Row background
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),  # Borders for all cells
+        ('LEFTPADDING', (0, 0), (-1, -1), 10),  # Padding left
+        ('RIGHTPADDING', (0, 0), (-1, -1), 10),  # Padding right
+        ('ROWBACKGROUNDS', (0, 1), (-1, -3), [colors.white, colors.white]),  # Alternate row colors
+        ('BACKGROUND', (-2, -2), (-1, -1), colors.lightgrey),  # Background for total rows
+        ('FONTNAME', (-2, -2), (-1, -1), 'Helvetica-Bold'),  # Bold total text
+    ])
+
+
+    
+    table.setStyle(style)
+
+    # Add table to elements
+    elements.append(table)
+
+    # Build PDF
+    pdf.build(elements)
+    return response
+
+
+def generate_pdf(transactions):
+    from io import BytesIO
+    buffer = BytesIO()
+    p = canvas.Canvas(buffer)
+    
+    p.setFont("Helvetica", 14)
+    p.drawString(100, 800, "Transaction Log")
+    y = 780
+
+    for transaction in transactions:
+        p.setFont("Helvetica", 10)
+        p.drawString(100, y, f"{transaction.date} | {transaction.description} | {transaction.amount} | {transaction.type} | {transaction.category}")
+        y -= 20
+        if y < 50:
+            p.showPage()
+            y = 800
+
+    p.save()
+    buffer.seek(0)
+    return buffer
+
+
+
 
 def delete_transaction(request, transaction_id):
     transaction = get_object_or_404(Transaction, id=transaction_id, user=request.user)

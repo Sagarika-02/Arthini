@@ -29,12 +29,15 @@ class BudgetForm(forms.ModelForm):
         }
 
 class TransactionForm(forms.ModelForm):
+    
     class Meta:
         model = Transaction
-        fields = ['description', 'amount', 'type','category']
+        fields = ['description', 'amount', 'type','category','date']
         widgets = {
             'description': forms.TextInput(attrs={'class': 'p-2 border rounded', 'placeholder': 'Description'}),
             'amount': forms.NumberInput(attrs={'class': 'p-2 border rounded', 'placeholder': 'Amount'}),
             'type': forms.Select(attrs={'class': 'p-2 border rounded'}),
-            'category':forms.Select(attrs={'class': 'p-2 border rounded'}),
+            'category': forms.TextInput(attrs={'class': 'p-2 border rounded', 'placeholder': 'Enter category'}),  # Changed from Select to TextInput
+            'date': forms.DateInput(attrs={'class': 'p-2 border rounded', 'type': 'date'}),  # Add calendar input
+
         }
